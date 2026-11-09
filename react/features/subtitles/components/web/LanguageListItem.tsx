@@ -33,7 +33,7 @@ const useStyles = makeStyles()(theme => {
             fontSize: '0.875rem',
             cursor: 'pointer',
             padding: '5px 0',
-            '&:hover': {
+            '&:hover, &:focus-visible': {
                 backgroundColor: theme.palette.languageSelectorHover
             }
         },
@@ -62,11 +62,29 @@ const LanguageListItem = ({
 }: ILanguageListItemProps) => {
     const { classes: styles } = useStyles();
     const onLanguageSelectedWrapper = useCallback(() => onLanguageSelected(lang), [ lang ]);
+    const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLElement>) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onLanguageSelected(lang);
+        } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+
+            const sibling = e.key === 'ArrowDown' ? e.currentTarget.nextElementSibling : e.currentTarget.previousElementSibling;
+
+            if (sibling instanceof HTMLElement) {
+                sibling.focus();
+            }
+        }
+    }, [ lang, onLanguageSelected ]);
 
     return (
         <div
+            aria-checked = { Boolean(selected) }
             className = { `${styles.itemContainer} ${selected ? styles.activeItemContainer : ''}` }
-            onClick = { onLanguageSelectedWrapper }>
+            onClick = { onLanguageSelectedWrapper }
+            onKeyDown = { onKeyDown }
+            role = 'radio'
+            tabIndex = { 0 }>
             <span className = { styles.iconWrapper }>{ selected
                 && <Icon src = { IconCheck } /> }</span>
             { t(lang) }

@@ -56,6 +56,13 @@ const LanguageSelectorDialog = (props: IAbstractLanguageSelectorDialogProps) => 
         dispatch(openSettingsDialog(SETTINGS_TABS.MORE, false));
     }, []);
 
+    const onSourceLanguageKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onSourceLanguageClick();
+        }
+    }, [ onSourceLanguageClick ]);
+
     return (
         <Dialog
             cancel = {{ hidden: true }}
@@ -68,7 +75,10 @@ const LanguageSelectorDialog = (props: IAbstractLanguageSelectorDialogProps) => 
                     })
                 }<span
                     className = { styles.spanWrapper }
-                    onClick = { onSourceLanguageClick }>{t('transcribing.sourceLanguageHere')}.</span>
+                    onClick = { onSourceLanguageClick }
+                    onKeyDown = { onSourceLanguageKeyDown }
+                    role = 'button'
+                    tabIndex = { 0 }>{t('transcribing.sourceLanguageHere')}.</span>
             </p>
             <LanguageList
                 items = { listItems }

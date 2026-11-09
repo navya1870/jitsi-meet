@@ -1,6 +1,6 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-
 
 import LanguageListItem from './LanguageListItem';
 
@@ -36,6 +36,7 @@ const LanguageList = ({
     onLanguageSelected
 }: ILanguageListProps) => {
     const { classes: styles } = useStyles();
+    const { t } = useTranslation();
     const listItems = items.map(item => (
         <LanguageListItem
             key = { item.id }
@@ -45,7 +46,12 @@ const LanguageList = ({
     ));
 
     return (
-        <div className = { styles.itemsContainer }>{listItems}</div>
+        <div
+            aria-label = { t('transcribing.subtitles') }
+            className = { styles.itemsContainer }
+            role = 'radiogroup'>
+            {listItems}
+        </div>
     );
 };
 

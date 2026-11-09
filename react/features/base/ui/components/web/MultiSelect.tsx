@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 
 import { IconCloseLarge } from '../../../icons/svg';
@@ -75,7 +76,7 @@ const useStyles = makeStyles()(theme => {
             '&.found': {
                 cursor: 'pointer',
                 padding: `10px ${theme.spacing(3)}`,
-                '&:hover': {
+                '&:hover, &:focus-visible': {
                     backgroundColor: theme.palette.multiSelectItemHover
                 }
             },
@@ -112,18 +113,61 @@ const MultiSelect = ({
     onRemoved
 }: IProps) => {
     const { classes } = useStyles();
+    const { t } = useTranslation();
     const inputRef = useRef();
+    const listRef = useRef<HTMLDivElement>(null);
     const selectItem = useCallback(item => () => onSelected(item), [ onSelected ]);
     const removeItem = useCallback(item => () => onRemoved(item), [ onRemoved ]);
+
+    // The list of suggestions is not part of the tab order of the input, so the keyboard needs a way in: ArrowDown
+    // from the input moves to the first suggestion.
+    const onInputKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === 'ArrowDown' && isOpen) {
+            const firstItem = listRef.current?.querySelector<HTMLElement>('[role="option"]:not([aria-disabled="true"])');
+
+            if (firstItem) {
+                e.preventDefault();
+                firstItem.focus();
+            }
+        }
+    }, [ isOpen ]);
+
+    const onItemKeyDown = useCallback((item: MultiSelectItem) => (e: React.KeyboardEvent<HTMLElement>) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onSelected(item);
+
+            // The list closes when something is selected, so give the focus back to the field.
+            document.getElementById(id)?.focus();
+        } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+
+            const sibling = e.key === 'ArrowDown' ? e.currentTarget.nextElementSibling : e.currentTarget.previousElementSibling;
+
+            if (sibling instanceof HTMLElement && sibling.getAttribute('role') === 'option') {
+                sibling.focus();
+            } else if (e.key === 'ArrowUp') {
+                document.getElementById(id)?.focus();
+            }
+        }
+    }, [ id, onSelected ]);
+
     const foundItems = useMemo(() => (
-        <div className = { `${classes.items} found` }>
+        <div
+            className = { `${classes.items} found` }
+            ref = { listRef }
+            role = 'listbox'>
             {
                 items.length > 0
                     ? items.map(item => (
                         <div
+                            aria-disabled = { item.isDisabled ? true : undefined }
                             className = { `${classes.listItem} ${item.isDisabled ? 'disabled' : ''} found` }
                             key = { item.value }
-                            onClick = { item.isDisabled ? undefined : selectItem(item) }>
+                            onClick = { item.isDisabled ? undefined : selectItem(item) }
+                            onKeyDown = { item.isDisabled ? undefined : onItemKeyDown(item) }
+                            role = 'option'
+                            tabIndex = { item.isDisabled ? undefined : 0 }>
                             {item.elemBefore}
                             <div className = { `content ${item.elemBefore ? '' : 'without-before'}` }>
                                 {item.content}
@@ -134,7 +178,7 @@ const MultiSelect = ({
                     : <div className = { classes.listItem }>{noMatchesText}</div>
             }
         </div>
-    ), [ items ]);
+    ), [ items, onItemKeyDown ]);
 
     const errorMessageDialog = useMemo(() =>
         error && <div className = { classes.errorMessage }>
@@ -148,6 +192,7 @@ const MultiSelect = ({
                 disabled = { disabled }
                 id = { id }
                 onChange = { onFilterChange }
+                onKeyDown = { onInputKeyDown }
                 placeholder = { placeholder }
                 ref = { inputRef }
                 value = { filterValue ?? '' } />
@@ -164,9 +209,8 @@ const MultiSelect = ({
                                 <p>{item.content}</p>
                             </div>
                             <ClickableIcon
-                                accessibilityLabel = { 'multi-select-unselect' }
+                                accessibilityLabel = { t('dialog.Remove') }
                                 icon = { IconCloseLarge }
-                                id = 'modal-header-close-button'
                                 onClick = { removeItem(item) } />
                         </div>
                     ))}
