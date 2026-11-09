@@ -148,15 +148,18 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
         if (participant && audioModerationEnabled) {
             if (isLocalParticipantModerator(state)) {
 
-                // this is handled only by moderators
-                if (hasRaisedHand(participant)) {
-                    // if participant raises hand show notification
-                    !isParticipantApproved(participant.id, MEDIA_TYPE.AUDIO)(state)
-                    && dispatch(participantPendingAudio(participant));
-                } else {
-                    // if participant lowers hand hide notification
-                    isParticipantPending(participant, MEDIA_TYPE.AUDIO)(state)
-                    && dispatch(dismissPendingAudioParticipant(participant));
+                // this is handled only by moderators. The update is partial, so a rename, a region change and so on
+                // don't carry the raised hand state and must not be read as the hand being lowered.
+                if ('raisedHandTimestamp' in participant) {
+                    if (hasRaisedHand(participant)) {
+                        // if participant raises hand show notification
+                        !isParticipantApproved(participant.id, MEDIA_TYPE.AUDIO)(state)
+                        && dispatch(participantPendingAudio(participant));
+                    } else {
+                        // if participant lowers hand hide notification
+                        isParticipantPending(participant, MEDIA_TYPE.AUDIO)(state)
+                        && dispatch(dismissPendingAudioParticipant(participant));
+                    }
                 }
             } else if (participant.id === getLocalParticipant(state)?.id
                 && /* the new role */ isParticipantModerator(participant)) {

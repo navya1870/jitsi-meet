@@ -44,7 +44,7 @@ import {
     getLocalParticipant,
     getParticipantById,
     getRemoteParticipants,
-    isScreenShareParticipantById
+    isScreenShareParticipant
 } from '../../base/participants/functions';
 import MiddlewareRegistry from '../../base/redux/MiddlewareRegistry';
 import StateListenerRegistry from '../../base/redux/StateListenerRegistry';
@@ -268,9 +268,9 @@ externalAPIEnabled && MiddlewareRegistry.register(store => next => action => {
 
         const { participant } = action;
 
-        const isVirtualScreenshareParticipant = isScreenShareParticipantById(store.getState(), participant.id);
-
-        if (isVirtualScreenshareParticipant) {
+        // The participant entity is already gone from the state when PARTICIPANT_LEFT is handled, so look at the
+        // action's participant, which carries the type of the fake participant.
+        if (isScreenShareParticipant(participant)) {
             break;
         }
 
