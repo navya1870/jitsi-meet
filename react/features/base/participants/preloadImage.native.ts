@@ -11,7 +11,11 @@ import { isIconUrl } from './functions';
  */
 export function preloadImage(src: string | Object, _isUsingCORS: boolean): Promise<any> {
     if (isIconUrl(src)) {
-        return Promise.resolve(src);
+        // The caller expects the same shape as for loaded images, otherwise it reads an undefined src.
+        return Promise.resolve({
+            src,
+            isUsingCORS: false
+        });
     }
 
     return new Promise((resolve, reject) => {
