@@ -110,6 +110,8 @@ const BandwidthSettingsDialog = () => {
                 <Input
                     bottomLabel = { t('bandwidthSettings.assumedBandwidthBpsWarning') }
                     icon = { IconInfoCircle }
+                    iconAccessibilityLabel = { t('bandwidthSettings.possibleValues') }
+                    iconAriaExpanded = { showAssumedBandwidthInfo }
                     iconClick = { toggleInfoPanel }
                     id = 'setAssumedBandwidthBps'
                     label = { t('bandwidthSettings.setAssumedBandwidthBps') }

@@ -18,6 +18,16 @@ interface IProps extends IInputProps {
     className?: string;
     describedBy?: string;
     hiddenDescription?: string; // Text that will be announced by screen readers but not displayed visually.
+
+    /**
+     * The accessible name of the clickable icon. Only used when iconClick is set.
+     */
+    iconAccessibilityLabel?: string;
+
+    /**
+     * Whether the panel the clickable icon opens is currently expanded. Only used when iconClick is set.
+     */
+    iconAriaExpanded?: boolean;
     iconClick?: () => void;
 
     /**
@@ -179,6 +189,8 @@ const Input = React.forwardRef<any, IProps>(({
     error,
     hiddenDescription,
     icon,
+    iconAccessibilityLabel,
+    iconAriaExpanded,
     iconClick,
     id,
     invalidReason,
@@ -252,7 +264,12 @@ const Input = React.forwardRef<any, IProps>(({
             </label>}
             <div className = { styles.fieldContainer }>
                 {icon && <Icon
-                    { ...(iconClick ? { tabIndex: 0 } : {}) }
+                    { ...(iconClick ? {
+                        ariaExpanded: iconAriaExpanded,
+                        ariaLabel: iconAccessibilityLabel,
+                        role: 'button',
+                        tabIndex: 0
+                    } : {}) }
                     className = { cx(styles.icon, iconClick && styles.iconClickable) }
                     onClick = { iconClick }
                     size = { 20 }

@@ -187,7 +187,7 @@
         },
         "title": "Chat",
         "titleWithCC": "CC",
-        "titleWithFeatures": "Chat and",
+        "titleWithFeatures": "Chat and {{features}}",
         "titleWithFileSharing": "Files",
         "titleWithPolls": "Polls",
         "you": "you"

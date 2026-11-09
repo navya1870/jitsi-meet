@@ -270,22 +270,29 @@ function ChatHeader({ className, isCCTabEnabled, isPollsEnabled, onCancel: onCan
                         ariaLabel = { t('chat.search.previous') }
                         className = { cx(classes.navButton, !hasMatches && 'disabled') }
                         onClick = { onPrev }
-                        src = { IconArrowUp } />
+                        role = 'button'
+                        src = { IconArrowUp }
+                        tabIndex = { 0 } />
                     <Icon
                         ariaLabel = { t('chat.search.next') }
                         className = { cx(classes.navButton, !hasMatches && 'disabled') }
                         onClick = { onNext }
-                        src = { IconArrowDown } />
+                        role = 'button'
+                        src = { IconArrowDown }
+                        tabIndex = { 0 } />
                     <span className = { classes.divider } />
                     <Icon
                         ariaLabel = { t('chat.search.close') }
                         onClick = { onSearchClose }
+                        role = 'button'
                         size = { 18 }
-                        src = { IconCloseCircle } />
+                        src = { IconCloseCircle }
+                        tabIndex = { 0 } />
                 </div>
             ) : (
                 <span
                     aria-level = { 1 }
+                    id = 'chat-header'
                     role = 'heading'>
                     { t(title) }
                 </span>
