@@ -199,7 +199,7 @@ const BaseDialog = ({
         if (e.key === 'Enter' && !disableEnter) {
             submit?.();
         }
-    }, [ disableEnter, onClose, submit ]);
+    }, [ disableEnter, disableEscape, onClose, submit ]);
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown);

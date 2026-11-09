@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import { makeStyles } from 'tss-react/mui';
 
 import { ACTION_TRIGGER } from '../../../../participants-pane/constants';
@@ -206,7 +206,11 @@ const ListItem = ({
 }: IProps) => {
     const { classes, cx } = useStyles();
     const isMobile = isMobileBrowser();
-    let timeoutHandler: number;
+
+    // The timer must survive re-renders between the touch start and the touch end, so it can't be a local variable.
+    const timeoutHandler = useRef<number>();
+
+    useEffect(() => () => clearTimeout(timeoutHandler.current), []);
 
     /**
      * Set calling long press handler after x milliseconds.
@@ -217,7 +221,8 @@ const ListItem = ({
     function _onTouchStart(e: React.TouchEvent) {
         const target = e.touches[0].target;
 
-        timeoutHandler = window.setTimeout(() => onLongPress?.(target), 600);
+        clearTimeout(timeoutHandler.current);
+        timeoutHandler.current = window.setTimeout(() => onLongPress?.(target), 600);
     }
 
     /**
@@ -227,7 +232,7 @@ const ListItem = ({
      * @returns {void}
      */
     function _onTouchMove() {
-        clearTimeout(timeoutHandler);
+        clearTimeout(timeoutHandler.current);
     }
 
     /**
@@ -237,7 +242,7 @@ const ListItem = ({
      * @returns {void}
      */
     function _onTouchEnd() {
-        clearTimeout(timeoutHandler);
+        clearTimeout(timeoutHandler.current);
     }
 
     return (

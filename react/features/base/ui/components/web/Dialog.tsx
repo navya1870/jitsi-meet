@@ -114,7 +114,7 @@ const Dialog = ({
             !disableAutoHideOnSubmit && dispatch(hideDialog());
             onSubmit?.();
         }
-    }, [ onSubmit ]);
+    }, [ disableAutoHideOnSubmit, onSubmit ]);
 
     return (
         <BaseDialog

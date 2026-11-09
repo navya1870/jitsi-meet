@@ -200,7 +200,6 @@ function MeetingParticipantItem({
 }: IProps) {
 
     const [ hasAudioLevels, setHasAudioLevel ] = useState(false);
-    const [ registeredEvent, setRegisteredEvent ] = useState(false);
 
     const _updateAudioLevel = useCallback(level => {
         const audioLevel = typeof level === 'number' && !isNaN(level)
@@ -209,24 +208,24 @@ function MeetingParticipantItem({
         setHasAudioLevel(audioLevel > 0.009);
     }, []);
 
-    useEffect(() => {
-        if (_audioTrack && !registeredEvent) {
-            const { jitsiTrack } = _audioTrack;
+    const audioJitsiTrack = _audioTrack?.jitsiTrack;
 
-            if (jitsiTrack) {
-                jitsiTrack.on(JitsiTrackEvents.TRACK_AUDIO_LEVEL_CHANGED, _updateAudioLevel);
-                setRegisteredEvent(true);
-            }
+    // Follow the audio level of the current track. The track can change (for example when the user switches to
+    // another microphone), then the listener of the old one is removed and the new one is added.
+    useEffect(() => {
+        if (!audioJitsiTrack) {
+            return;
         }
 
-        return () => {
-            if (_audioTrack && registeredEvent) {
-                const { jitsiTrack } = _audioTrack;
+        audioJitsiTrack.on(JitsiTrackEvents.TRACK_AUDIO_LEVEL_CHANGED, _updateAudioLevel);
 
-                jitsiTrack?.off(JitsiTrackEvents.TRACK_AUDIO_LEVEL_CHANGED, _updateAudioLevel);
-            }
+        return () => {
+            audioJitsiTrack.off(JitsiTrackEvents.TRACK_AUDIO_LEVEL_CHANGED, _updateAudioLevel);
+
+            // The old track doesn't report levels anymore, don't keep showing its last state.
+            setHasAudioLevel(false);
         };
-    }, [ _audioTrack ]);
+    }, [ audioJitsiTrack, _updateAudioLevel ]);
 
     if (!_matchesSearch) {
         return null;
