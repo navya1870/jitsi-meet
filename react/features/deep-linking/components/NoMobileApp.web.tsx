@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
+import { WithTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { createDeepLinkingPageEvent } from '../../analytics/AnalyticsEvents';
 import { sendAnalytics } from '../../analytics/functions';
 import { IReduxState } from '../../app/types';
 import { IDeeplinkingConfig } from '../../base/config/configType';
+import { translate } from '../../base/i18n/functions';
 
 
 /**
  * The type of the React {@code Component} props of
  * {@link NoMobileApp}.
  */
-interface IProps {
+interface IProps extends WithTranslation {
 
     /**
      * The deeplinking config.
@@ -43,17 +45,16 @@ class NoMobileApp extends Component<IProps> {
      */
     override render() {
         const ns = 'no-mobile-app';
-        const { desktop } = this.props._deeplinkingCfg;
+        const { _deeplinkingCfg: { desktop }, t } = this.props;
         const { appName } = desktop ?? {};
 
         return (
             <div className = { ns }>
                 <h2 className = { `${ns}__title` }>
-                    Video chat isn't available on mobile.
+                    { t('deepLinking.noMobileAppTitle') }
                 </h2>
                 <p className = { `${ns}__description` }>
-                    Please use { appName } on desktop to
-                    join calls.
+                    { t('deepLinking.noMobileAppDescription', { app: appName }) }
                 </p>
             </div>
         );
@@ -74,4 +75,4 @@ function _mapStateToProps(state: IReduxState) {
     };
 }
 
-export default connect(_mapStateToProps)(NoMobileApp);
+export default translate(connect(_mapStateToProps)(NoMobileApp));

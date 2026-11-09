@@ -165,8 +165,9 @@ UI.updateUserStatus = (user, status) => {
     const displayName = user.getDisplayName();
 
     APP.store.dispatch(showNotification({
-        titleKey: `${displayName} connected`,
-        descriptionKey: 'dialOut.statusMessage'
+        title: displayName,
+        descriptionKey: 'dialOut.statusMessage',
+        descriptionArguments: { status }
     }, NOTIFICATION_TIMEOUT_TYPE.SHORT));
 };
 

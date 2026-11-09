@@ -292,6 +292,8 @@
         "launchWebButton": "Launch in web",
         "noDesktopApp": "You don't have the app?",
         "noMobileApp": "You don't have the app?",
+        "noMobileAppDescription": "Please use {{app}} on desktop to join calls.",
+        "noMobileAppTitle": "Video chat isn't available on mobile.",
         "or": "OR",
         "termsAndConditions": "By continuing you agree to our <a href='{{termsAndConditionsLink}}' rel='noopener noreferrer' target='_blank'>terms & conditions.</a>",
         "title": "Launching your meeting in {{app}}…",

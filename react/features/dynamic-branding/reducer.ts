@@ -179,7 +179,7 @@ export interface IDynamicBrandingState {
     customizationFailed: boolean;
     customizationReady: boolean;
     defaultBranding: boolean;
-    defaultTranscriptionLanguage?: boolean;
+    defaultTranscriptionLanguage?: string;
     didPageUrl: string;
     groupChatRequiresPermission: boolean;
     inviteDomain: string;
@@ -210,6 +210,7 @@ ReducerRegistry.register<IDynamicBrandingState>(STORE_NAME, (state = DEFAULT_STA
             backgroundImageUrl,
             customIcons,
             defaultBranding,
+            defaultTranscriptionLanguage,
             didPageUrl,
             groupChatRequiresPermission,
             inviteDomain,
@@ -233,6 +234,7 @@ ReducerRegistry.register<IDynamicBrandingState>(STORE_NAME, (state = DEFAULT_STA
             backgroundImageUrl,
             brandedIconsPending: Boolean(customIcons),
             defaultBranding,
+            defaultTranscriptionLanguage,
             didPageUrl,
             groupChatRequiresPermission,
             inviteDomain,

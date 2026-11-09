@@ -218,7 +218,6 @@ function _conferenceFailed({ dispatch, getState }: IStore, next: Function, actio
     case JitsiConferenceErrors.CONFERENCE_RESTARTED: {
         if (enableForcedReload) {
             dispatch(showErrorNotification({
-                description: 'Restart initiated because of a bridge failure',
                 titleKey: 'dialog.sessionRestarted'
             }));
         }

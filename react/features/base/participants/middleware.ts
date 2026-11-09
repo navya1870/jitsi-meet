@@ -810,6 +810,7 @@ function _localRecordingUpdated({ dispatch, getState }: IStore, conference: IJit
         titleKey: 'notify.somebody',
         title: participantName,
         descriptionKey: newValue ? 'notify.localRecordingStarted' : 'notify.localRecordingStopped',
+        descriptionArguments: { name: participantName },
         uid: LOCAL_RECORDING_NOTIFICATION_ID
     }, NOTIFICATION_TIMEOUT_TYPE.MEDIUM));
     dispatch(playSound(newValue ? RECORDING_ON_SOUND_ID : RECORDING_OFF_SOUND_ID));
