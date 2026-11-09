@@ -100,18 +100,24 @@ function _updateLocalParticipantFromUrl({ dispatch, getState }: IStore) {
     const localParticipant = getLocalParticipant(getState());
 
     if (localParticipant) {
-        const displayName = escape(urlDisplayName);
-        const email = escape(urlEmail);
+        // Only touch what is actually in the URL, otherwise setting only the email would erase the saved display
+        // name (and the other way around).
+        const participantUpdate: { email?: string; name?: string; } = {};
+        const settingsUpdate: { displayName?: string; email?: string; } = {};
+
+        if (urlDisplayName) {
+            participantUpdate.name = settingsUpdate.displayName = escape(urlDisplayName);
+        }
+
+        if (urlEmail) {
+            participantUpdate.email = settingsUpdate.email = escape(urlEmail);
+        }
 
         dispatch(participantUpdated({
             ...localParticipant,
-            email,
-            name: displayName
+            ...participantUpdate
         }));
 
-        dispatch(updateSettings({
-            displayName,
-            email
-        }));
+        dispatch(updateSettings(settingsUpdate));
     }
 }

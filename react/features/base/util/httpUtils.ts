@@ -20,30 +20,34 @@ const RETRY_TIMEOUT = 3000;
  * through the Promise.
  */
 export function doGetJSON(url: string, retry?: boolean, options?: Object) {
-    const fetchPromise = fetch(url, options)
+    // A new request is needed for every attempt, awaiting the same promise again would not retry anything.
+    const doFetch = () => fetch(url, options)
         .then(response => {
-            const jsonify = response.json();
-
             if (response.ok) {
-                return jsonify;
+                return response.json();
             }
 
-            return jsonify
-                .then(result => Promise.reject(result));
+            // Keep the status, so that the retry below (and the callers) can tell client errors from the rest.
+            return response.json()
+                .catch(() => undefined)
+                .then(result => Promise.reject({
+                    ...typeof result === 'object' ? result : {},
+                    status: response.status
+                }));
         });
 
     if (retry) {
-        return timeoutPromise(fetchPromise, RETRY_TIMEOUT)
+        return timeoutPromise(doFetch(), RETRY_TIMEOUT)
             .catch(response => {
-                if (response.status >= 400 && response.status < 500) {
+                if (response?.status >= 400 && response.status < 500) {
                     return Promise.reject(response);
                 }
 
-                return timeoutPromise(fetchPromise, RETRY_TIMEOUT);
+                return timeoutPromise(doFetch(), RETRY_TIMEOUT);
             });
     }
 
-    return fetchPromise;
+    return doFetch();
 }
 
 /**
