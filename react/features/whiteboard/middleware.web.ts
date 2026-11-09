@@ -103,7 +103,16 @@ MiddlewareRegistry.register((store: IStore) => (next: Function) => (action: AnyA
 
                     return;
                 }
-                setNewWhiteboardOpen(store);
+                setNewWhiteboardOpen(store).catch((error: Error) => {
+                    // For example the chunk with the whiteboard can fail to load.
+                    logger.error('Whiteboard open failed', error);
+
+                    if (action.userInitiated) {
+                        dispatch(showErrorNotification({
+                            titleKey: 'info.noWhiteboard'
+                        }, NOTIFICATION_TIMEOUT_TYPE.MEDIUM));
+                    }
+                });
 
                 return;
             }
