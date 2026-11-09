@@ -1152,7 +1152,8 @@ class Filmstrip extends PureComponent <IProps, IState> {
             _topPanelVisible
         } = this.props;
         const classes = withStyles.getClasses(this.props);
-        const icon = (_topPanelFilmstrip ? _topPanelVisible : _mainFilmstripVisible) ? IconArrowDown : IconArrowUp;
+        const visible = _topPanelFilmstrip ? _topPanelVisible : _mainFilmstripVisible;
+        const icon = visible ? IconArrowDown : IconArrowUp;
         const actions = isMobileBrowser()
             ? { onTouchStart: this._onToggleButtonTouch }
             : { onClick: this._onToolbarToggleFilmstrip };
@@ -1165,7 +1166,7 @@ class Filmstrip extends PureComponent <IProps, IState> {
                     _topPanelFilmstrip && !_topPanelVisible && classes.toggleTopPanelContainerHidden,
                     'toggleFilmstripContainer') }>
                 <button
-                    aria-expanded = { this.props._mainFilmstripVisible }
+                    aria-expanded = { visible }
                     aria-label = { t('toolbar.accessibilityLabel.toggleFilmstrip') }
                     className = { classes.toggleFilmstripButton }
                     id = 'toggleFilmstripButton'

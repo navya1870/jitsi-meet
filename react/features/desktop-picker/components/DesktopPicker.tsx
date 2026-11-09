@@ -190,7 +190,7 @@ class DesktopPicker extends PureComponent<IProps, IState> {
                 { this._renderTabs() }
                 {types.map(type => (
                     <div
-                        aria-labelledby = { `${type}-button` }
+                        aria-labelledby = { type }
                         className = { selectedTab === type ? undefined : 'hide' }
                         id = { `${type}-panel` }
                         key = { type }
